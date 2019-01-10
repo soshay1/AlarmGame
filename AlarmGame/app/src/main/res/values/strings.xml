@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Alarm Game</string>
+    <string name="set_alarm">Set Alarm</string>
+    <string name="delete_alarm">Delete Alarm</string>
+    <string name="set_sound">Set Sound</string>
+    <string name="label_alarm">Set Label</string>
+    <string name="back">Back</string>
+    <string name="snooze">Snooze</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="default_alarm">6:56 AM</string>
+    <string name="default_label">yo wake up</string>
+    <string name="add">Add</string>
+    <string name="edit_label">What is the name of your new label?</string>
+    <string name="next">Next</string>
+</resources>

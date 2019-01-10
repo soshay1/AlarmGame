@@ -1,0 +1,56 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TimePicker
+        android:id="@+id/simpleTimePicker"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/set_alarm"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/set_alarm"
+            android:layout_toRightOf="@+id/set_sound"/>
+
+        <Button
+            android:id="@+id/set_sound"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="@string/set_sound" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/delete_alarm"
+            android:layout_width="183dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="201dp"
+            android:text="@string/delete_alarm" />
+
+        <Button
+            android:id="@+id/label_button"
+            android:layout_width="201dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_alarm"/>
+
+
+    </RelativeLayout>
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/back"/>
+</LinearLayout>
