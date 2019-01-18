@@ -34,8 +34,11 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
     private ArrayList<ArrayList<String>> mEverything;
     private boolean mCameFromAlarm;
     private boolean mAlarmChange;
+    private boolean mChangedLabel;
     private int mPosition;
     private ArrayList<Alarm> mAlarms;
+    private Button mAddButton;
+    private Boolean mDeletedAlarm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +47,7 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
         //mAlarms = mPrefs.getAll().get("my_alarms");
         //mLabels = mPrefs.getAll().get("my_labels");
         //mButtons = mPrefs.getAll().get("my_buttons");
+        mAddButton = (Button) findViewById(R.id.add_button);
 
         mEditor = mPrefs.edit();
         try {
@@ -69,26 +73,39 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
         //mEditor.commit();
         mNewAlarm = getIntent().getBooleanExtra("new_alarm",false);
         mCameFromAlarm= getIntent().getBooleanExtra("came_from_alarm",false);
+        mChangedLabel = getIntent().getBooleanExtra("label_changed",false);
         if (mCameFromAlarm){
             mAlarmChange = getIntent().getBooleanExtra("alarm_changed",false);
             mPosition = getIntent().getIntExtra("position",-1);
-            if(mNewAlarm){
-                Alarm newAlarm= new Alarm();
+            mDeletedAlarm = getIntent().getBooleanExtra("deleted_alarm",false);
+            if(mNewAlarm) {
+                Alarm newAlarm = new Alarm();
                 String newName = getIntent().getStringExtra("name");
                 String newLabel = getIntent().getStringExtra("label");
-                Boolean on = getIntent().getBooleanExtra("on",false);
-                if (on){
-                    // do stuff after this
+                mNames.add(newName);
+                mButtons.add(true);
+                mAlarms.add(newAlarm);
+                mLabels.add(newLabel); //adding everything
+                ArrayList<String> result = new ArrayList<String>();
+                mEverything.add(result);
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat df = new SimpleDateFormat("KK:mm aa", Locale.US);
+                Date d1=cal.getTime();
+                try{
+                    d1 = df.parse(mNames.get(mPosition));
                 }
+                catch (ParseException e){
+                    e.printStackTrace();
+                }
+                Calendar c1 = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                c1.setTime(d1);
+                mAlarms.get(mPosition).setAlarm(this, cal);
             }
-            if (mAlarmChange){
-                if ((mButtons.get(mPosition))==false){
+            if (mAlarmChange){ //doesn't apply to deleted alarms
+                if (mButtons.get(mPosition)){
                     mAlarms.get(mPosition).cancelAlarm(this);
-                    mAlarms.remove(mPosition);
-                    mLabels.remove(mPosition);
-                    mNames.remove(mPosition);
-                    mButtons.remove(mPosition);
-                    mEverything.remove(mPosition);
+                    mButtons.set(mPosition, false);
                 }
                 else{
                     Calendar cal = Calendar.getInstance();
@@ -104,21 +121,48 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     c1.setTime(d1);
                     mAlarms.get(mPosition).setAlarm(this, cal);
+                    mButtons.set(mPosition, true);
                 }
-
+            }
+            if(mDeletedAlarm){
+                if(mButtons.get(mPosition)) {
+                    mAlarms.get(mPosition).cancelAlarm(this);
+                }
+                    mAlarms.remove(mPosition);
+                    mLabels.remove(mPosition);
+                    mNames.remove(mPosition);
+                    mButtons.remove(mPosition);
+                    mEverything.remove(mPosition);
             }
         }
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.workshopParticipants);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyRecyclerViewAdapter(ListAlarmActivity.this, mEverything); //what list should i use
-        adapter.setClickListener(this);//This has a solution i'll ask later
-        recyclerView.setAdapter(adapter);
-
+        if (mEverything!=null && mEverything.size()!=0) {
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.workshopParticipants);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            adapter = new MyRecyclerViewAdapter(ListAlarmActivity.this, mEverything); //what list should i use
+            adapter.setClickListener(this);//This has a solution i'll ask later
+            recyclerView.setAdapter(adapter);
+        }
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ListAlarmActivity.this, MainSetActivity.class);
+                if(mEverything==null){
+                    i.putExtra("position",0);
+                }
+                else {
+                    i.putExtra("position", mEverything.size());
+                }
+                i.putExtra("new_alarm",true);
+                startActivity(i);
+            }
+        });
     }
     @Override
     public void onItemClick(View view, int position){
         Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this,MainSetActivity.class);
+        i.putExtra("position",position);
         startActivity(i);
     }
+
 }
