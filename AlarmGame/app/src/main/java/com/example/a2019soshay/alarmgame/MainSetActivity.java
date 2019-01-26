@@ -1,5 +1,5 @@
 package com.example.a2019soshay.alarmgame;
-
+///// THIS IS TO SET AN ALARM ////
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -53,9 +53,11 @@ public class MainSetActivity extends AppCompatActivity {
                 cal.set(Calendar.HOUR_OF_DAY, mTimePicker.getCurrentHour());
                 cal.set(Calendar.MINUTE,mTimePicker.getCurrentMinute());
                 Date d1=cal.getTime();
-                String time = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(d1);
+                String time = new SimpleDateFormat("kk:mm", Locale.getDefault()).format(d1);
                 i.putExtra("name",time);
                 i.putExtra("position",mPosition);
+                i.putExtra("hour",mTimePicker.getCurrentHour());
+                i.putExtra("minute",mTimePicker.getCurrentMinute());
                 startActivity(i);
             }
         });

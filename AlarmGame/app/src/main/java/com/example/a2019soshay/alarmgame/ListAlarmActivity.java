@@ -23,9 +23,9 @@ import java.util.Locale;
 public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
     private SharedPreferences mPrefs;
     private SharedPreferences.Editor mEditor;
-    private ArrayList<String> mNames;
+    public static ArrayList<String> mNames;
     private ArrayList<String> mLabels;
-    private ArrayList<Boolean> mButtons;
+    public static ArrayList<Boolean> mButtons;
     private MyRecyclerViewAdapter adapter;
     private boolean mNewAlarm;
     private int mPositionDelete;
@@ -36,19 +36,22 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
     private boolean mAlarmChange;
     private boolean mChangedLabel;
     private int mPosition;
-    private ArrayList<Alarm> mAlarms;
+    public static ArrayList<Alarm> mAlarms;
     private Button mAddButton;
     private Boolean mDeletedAlarm;
+    private int mHour;
+    private int mMinute;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_alarm);
+        startService(new Intent(this,YourService.class));
         mPrefs = getSharedPreferences("label", 0);
         //mAlarms = mPrefs.getAll().get("my_alarms");
         //mLabels = mPrefs.getAll().get("my_labels");
         //mButtons = mPrefs.getAll().get("my_buttons");
         mAddButton = (Button) findViewById(R.id.add_button);
-
+        mEverything = new ArrayList<ArrayList<String>>();
         mEditor = mPrefs.edit();
         try {
             mNames = (ArrayList<String>) ObjectSerializer.deserialize(mPrefs.getString("name_list", ObjectSerializer.serialize(new ArrayList<String>())));
@@ -75,6 +78,8 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
         mCameFromAlarm= getIntent().getBooleanExtra("came_from_alarm",false);
         mChangedLabel = getIntent().getBooleanExtra("label_changed",false);
         if (mCameFromAlarm){
+            mHour =getIntent().getIntExtra("hour",-1);
+            mMinute = getIntent().getIntExtra("minute",-1);
             mAlarmChange = getIntent().getBooleanExtra("alarm_changed",false);
             mPosition = getIntent().getIntExtra("position",-1);
             mDeletedAlarm = getIntent().getBooleanExtra("deleted_alarm",false);
@@ -87,9 +92,13 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
                 mAlarms.add(newAlarm);
                 mLabels.add(newLabel); //adding everything
                 ArrayList<String> result = new ArrayList<String>();
+                result.add(newName);
+                result.add(newLabel);
+                result.add("ON");
                 mEverything.add(result);
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat df = new SimpleDateFormat("KK:mm aa", Locale.US);
+                /*SimpleDateFormat df = new SimpleDateFormat("kk:mm", Locale.US);
+
                 Date d1=cal.getTime();
                 try{
                     d1 = df.parse(mNames.get(mPosition));
@@ -97,10 +106,19 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
                 catch (ParseException e){
                     e.printStackTrace();
                 }
+                //d1.setYear(2019);
+
                 Calendar c1 = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                c1.setTime(d1);
-                mAlarms.get(mPosition).setAlarm(this, cal);
+                c1.setTime(d1); // this goes to 1970 maybe just set hour and minute would be easier
+                Calendar c2 = Calendar.getInstance();
+                c1.set(Calendar.YEAR,c2.get(Calendar.YEAR));
+                c1.set(Calendar.DAY_OF_MONTH,c2.get(Calendar.DAY_OF_MONTH));
+                c1.set(Calendar.DATE,c2.get(Calendar.DATE));*/
+                cal.set(Calendar.HOUR_OF_DAY,mHour);
+                cal.set(Calendar.MINUTE,mMinute);
+                cal.set(Calendar.SECOND,0);
+                mAlarms.get(mPosition).setAlarm(ListAlarmActivity.this, cal);/////////////////////// THIS IS THE RELEVANT LINE
             }
             if (mAlarmChange){ //doesn't apply to deleted alarms
                 if (mButtons.get(mPosition)){
@@ -141,6 +159,7 @@ public class ListAlarmActivity extends AppCompatActivity implements MyRecyclerVi
             adapter = new MyRecyclerViewAdapter(ListAlarmActivity.this, mEverything); //what list should i use
             adapter.setClickListener(this);//This has a solution i'll ask later
             recyclerView.setAdapter(adapter);
+
         }
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
