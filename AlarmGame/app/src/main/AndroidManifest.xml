@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.a2019soshay.alarmgame">
-    <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-    <application
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainSetActivity" />
         <activity android:name=".AlarmActivity" />
+        <activity android:name=".MathQuiz" />
         <activity android:name=".ListAlarmActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,8 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:process=":remote" android:name=".Alarm"></receiver>
-        <activity android:name=".LabelActivity"></activity>
+
+        <receiver
+            android:name=".Alarm"
+            android:process=":remote" />
+
+        <activity android:name=".LabelActivity" />
+
+        <service
+            android:name=".YourService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
